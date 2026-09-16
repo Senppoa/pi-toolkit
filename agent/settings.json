@@ -1,0 +1,26 @@
+{
+  "lastChangelogVersion": "0.85.1",
+  "theme": "my-light/my-dark",
+  "defaultThinkingLevel": "max",
+  "tuiMode": "regular",
+  "defaultProvider": "zai",
+  "defaultModel": "glm-5.3-flash",
+  "hideThinkingBlock": true,
+  "packages": [
+    "npm:@smoose/pi-beautify",
+    "npm:pi-open-tui",
+    "npm:pi-mcp-adapter",
+    "npm:pi-web-access",
+    "npm:pi-subagents",
+    "npm:pi-background-tasks",
+    "npm:pi-cache-optimizer",
+    "npm:pi-markdown-preview",
+    "npm:pi-lens",
+    "npm:@juicesharp/rpiv-todo",
+    "npm:pi-hermes-memory",
+    "npm:pi-loop",
+    "npm:@narumitw/pi-goal",
+    "npm:pi-notify",
+    "git:github.com/DietrichGebert/ponytail"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "supermemory": {
+      "url": "https://mcp.supermemory.ai/mcp",
+      "auth": "bearer",
+      "bearerTokenEnv": "SUPERMEMORY_API_KEY"
+    }
+  }
+}

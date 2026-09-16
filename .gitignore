@@ -1,0 +1,27 @@
+# credentials & secrets — NEVER commit
+auth.json
+mcp.json
+.env
+.env.*
+*.key
+*.pem
+id_rsa*
+*.p12
+credentials*.json
+*token*.txt
+
+# runtime data & caches
+node_modules/
+sessions/
+logs/
+*.log
+tasks/
+cache/
+fff/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
+# OS noise
+.DS_Store
+Thumbs.db

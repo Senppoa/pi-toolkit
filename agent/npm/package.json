@@ -1,0 +1,23 @@
+{
+  "name": "pi-extensions",
+  "private": true,
+  "dependencies": {
+    "@juicesharp/rpiv-todo": "^2.10.1",
+    "@narumitw/pi-goal": "^0.54.4",
+    "@smoose/pi-beautify": "^0.1.9",
+    "pi-background-tasks": "^2.5.0",
+    "pi-cache-optimizer": "^2.8.10",
+    "pi-hermes-memory": "^0.9.9",
+    "pi-lens": "^4.1.6",
+    "pi-loop": "^0.1.5",
+    "pi-markdown-preview": "^0.16.0",
+    "pi-mcp-adapter": "^2.33.0",
+    "pi-notify": "^1.4.0",
+    "pi-open-tui": "^0.3.5",
+    "pi-subagents": "^0.67.0",
+    "pi-web-access": "^0.29.0"
+  },
+  "overrides": {
+    "better-sqlite3": "^12.11.1"
+  }
+}
