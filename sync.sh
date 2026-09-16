@@ -6,6 +6,8 @@ set -euo pipefail
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PI_DIR="${HOME}/.pi/agent"
 AGENTS_SKILLS="${HOME}/.agents/skills"
+# skills curated out of this repo on purpose (they stay in ~/.agents/skills locally)
+SKIP_SKILLS="codex-prove rendercv sol-control"
 
 log()  { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 die()  { printf '\033[1;31mABORT\033[0m %s\n' "$*" >&2; exit 1; }
@@ -29,6 +31,7 @@ mkdir -p "$REPO_DIR/skills"
 for skill_dir in "$AGENTS_SKILLS"/*/; do
   [[ -d "$skill_dir" ]] || continue
   name="$(basename "$skill_dir")"
+  [[ " $SKIP_SKILLS " != *" $name "* ]] || continue
   rm -rf "$REPO_DIR/skills/$name"
   cp -a "$skill_dir" "$REPO_DIR/skills/$name"
 done

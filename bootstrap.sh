@@ -74,8 +74,8 @@ done <<< "$PACKAGES"
 # 4. Copy static config files
 # ---------------------------------------------------------------------------
 log "Copying config files…"
-# settings.json: keep live file if it already declares the same packages,
-# otherwise overwrite with repo version (pi install above may have touched it).
+# settings.json: the repo version is the source of truth for a restore
+# (packages above were re-installed from it); overwrite any live copy.
 cp "$REPO_DIR/agent/settings.json" "$PI_DIR/settings.json"
 cp "$REPO_DIR/agent/open-tui.json" "$PI_DIR/open-tui.json"
 mkdir -p "$PI_DIR/themes"

@@ -6,7 +6,7 @@
 ## 快速恢复（新机器）
 
 ```bash
-git clone <repo-url> ~/pi-toolkit
+git clone https://github.com/Senppoa/pi-toolkit.git ~/pi-toolkit
 cd ~/pi-toolkit
 bash bootstrap.sh
 ```
@@ -36,7 +36,7 @@ bash bootstrap.sh
 | `agent/themes/*.json` | `~/.pi/agent/themes/` | 自定义主题 my-dark / my-light |
 | `agent/extensions/effort.ts` | `~/.pi/agent/extensions/` | 自定义 `/effort` 扩展 |
 | `agent/npm/package.json`、`package-lock.json` | 不直接复制 | 仅作版本记录，`pi install` 会重新生成 |
-| `skills/<name>/` | `~/.agents/skills/<name>/` + 软链到 `~/.pi/agent/skills/` | codex-prove、rendercv、slidev、sol-control |
+| `skills/<name>/` | `~/.agents/skills/<name>/` + 软链到 `~/.pi/agent/skills/` | slidev（其余技能有意不追踪，见下表） |
 
 ## 已安装 packages（`agent/settings.json` 声明，bootstrap 自动 `pi install`）
 
@@ -74,6 +74,7 @@ bash bootstrap.sh
 | `pi-hermes-memory/`、`projects-memory/` | 个人记忆数据（约 6.5MB，含个人笔记），非配置；如需迁移请另行手动备份 |
 | `models-store.json`、`models.json` | 模型目录缓存，`pi update` 自动刷新 |
 | `extensions/pi-permission-system/` | 仅含日志，无代码 |
+| `skills/{codex-prove,rendercv,sol-control}/` | 本机保留但不追踪；`sync.sh` 中 `SKIP_SKILLS` 显式跳过 |
 
 ## 日常同步
 
