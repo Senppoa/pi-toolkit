@@ -101,6 +101,4 @@ git push         # 确认无误后手动推送
 
 - 仓库从未包含真实 token；`mcp.example.json` 使用 pi-mcp-adapter 支持的
   `bearerTokenEnv`，从环境变量 `SUPERMEMORY_API_KEY` 读取密钥。
-- 由于历史配置曾以明文形式存在于本机 `~/.pi/agent/mcp-adapter.json`（旧版为 `mcp.json`），若该 token 曾外泄，
-  建议到 supermemory 控制台轮换一次。
 - `.gitignore` 已覆盖凭据、缓存、日志、`node_modules`，但仍建议每次 push 前过一眼 `git status`。
