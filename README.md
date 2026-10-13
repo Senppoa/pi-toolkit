@@ -1,7 +1,9 @@
 # pi-toolkit
 
-个人 **Pi Agent**（pi coding agent）配置仓库：在任何 Linux / WSL 终端上尽量一键恢复完整环境。
-采用「配置声明 + 自动重装依赖」模式，不备份整个 `~/.pi`，也不包含任何密钥。
+一套 **Pi Agent**（[pi coding agent](https://pi.dev)）配置的声明式备份与一键恢复方案，适用于 Linux / WSL。
+
+不备份整个 `~/.pi`：仓库只保存配置声明、自定义文件和少量技能；插件在恢复时由 `pi install`
+从 npm / GitHub 官方源重新拉取。因此仓库体积小、不含密钥，可跨机器复用。
 
 ## 快速恢复（新机器）
 
@@ -11,20 +13,21 @@ cd ~/pi-toolkit
 bash bootstrap.sh
 ```
 
-之后只需：
+`bootstrap.sh` 是幂等的：已存在的配置会先备份到 `~/.pi-backup-<时间戳>/`。恢复后还需手动完成：
 
-1. 认证：运行 `pi` 完成 OAuth 登录，或设置对应 provider 的 API Key（`pi auth status` 可查看状态）
-2. MCP 密钥：`export SUPERMEMORY_API_KEY=<你的 token>`（写入 `~/.bashrc` / `~/.zshrc` 持久化）
+1. **认证**：运行 `pi` 完成 OAuth 登录，或配置对应 provider 的 API Key（`pi auth status` 查看状态）
+2. **MCP 密钥**（仅当使用 supermemory MCP）：`export SUPERMEMORY_API_KEY=<你的 token>`，
+   写入 `~/.bashrc` / `~/.zshrc` 持久化
 
-## 本机采集信息
+## 参考环境
 
 | 项目 | 值 |
 |---|---|
-| Pi 版本 | `1.2.0`（pi 自管理安装：`~/.pi/agent/install/releases/1.2.0`，入口 `~/.local/bin/pi`） |
-| Node | v24.14.0（nvm 管理） |
+| Pi | `1.2.0`（自管理安装：`~/.pi/agent/install/releases/`，入口 `~/.local/bin/pi`） |
+| Node.js | v24.14.0 |
 | 配置目录 | `~/.pi/agent` |
-| 技能目录 | `~/.agents/skills`（slidev，软链进 `~/.pi/agent/skills/`）；`~/.pi/agent/skills/`（个人技能，如 model-picker） |
-| 依赖快照日期 | 2026-10-13 |
+| 技能目录 | `~/.agents/skills`（软链到 `~/.pi/agent/skills/`） |
+| 快照日期 | 2026-10-13 |
 
 ## 仓库内容 → 恢复位置
 
@@ -32,13 +35,13 @@ bash bootstrap.sh
 |---|---|---|
 | `agent/settings.json` | `~/.pi/agent/settings.json` | 主题、默认模型、packages 声明 |
 | `agent/open-tui.json` | `~/.pi/agent/open-tui.json` | pi-open-tui 配置 |
-| `agent/mcp.example.json` | `~/.pi/agent/mcp-adapter.json`（仅当不存在） | 已脱敏，token 走环境变量 `SUPERMEMORY_API_KEY` |
+| `agent/mcp.example.json` | `~/.pi/agent/mcp-adapter.json`（仅当不存在） | 脱敏示例，token 走环境变量 `SUPERMEMORY_API_KEY` |
 | `agent/lazy.json` | `~/.pi/agent/lazy.json` | pi-lazy 懒加载规格 |
 | `agent/hermes-memory-config.json` | `~/.pi/agent/hermes-memory-config.json` | pi-hermes-memory 模型覆盖 |
 | `agent/themes/*.json` | `~/.pi/agent/themes/` | 自定义主题 my-dark / my-light |
 | `agent/extensions/effort.ts` | `~/.pi/agent/extensions/` | 自定义 `/effort` 扩展 |
-| `agent/npm/package.json`、`package-lock.json` | 不直接复制 | 仅作版本记录，`pi install` 会重新生成 |
-| `skills/<name>/` | `~/.agents/skills/<name>/` + 软链到 `~/.pi/agent/skills/` | slidev（其余技能有意不追踪，见下表） |
+| `agent/npm/package.json`、`package-lock.json` | 不直接复制 | 版本记录，`pi install` 会重新生成 |
+| `skills/<name>/` | `~/.agents/skills/<name>/` + 软链到 `~/.pi/agent/skills/` | 随仓库跟踪的技能（当前为 slidev） |
 
 ## 已安装 packages（`agent/settings.json` 声明，bootstrap 自动 `pi install`）
 
@@ -69,36 +72,28 @@ bash bootstrap.sh
 `pi-lens` 已不再直接安装，改为 `agent/lazy.json` 中的懒加载规格（按需触发）。
 
 `bootstrap.sh` 按包名重新安装，会解析各包当前可用版本；如需严格锁定版本，可手动执行
-`cd ~/.pi/agent/npm && npm ci`（lock 文件已随仓库提供备份）。
+`cd ~/.pi/agent/npm && npm ci`（lock 文件已随仓库提供）。
 
-## 明确排除的内容（不会上传）
+## 脚本
 
-| 内容 | 原因 |
+| 脚本 | 作用 |
 |---|---|
-| `auth.json` | OAuth / provider 凭据 |
-| `mcp.json` / `mcp-adapter.json`（真实 token） | 含 bearer token；仓库只提供 `mcp.example.json`（`bearerTokenEnv`） |
-| `.env`、`*.key`、`*.pem`、private key | 密钥类文件 |
-| `sessions/`、`tasks/`、`logs/`、`fff/`、`web-search-cache/`、`mcp-cache.json`、`trust.json` | 会话、运行日志与缓存，机器相关 |
-| `node_modules/`、`~/.pi/agent/npm/`（node_modules）、`~/.pi/agent/git/` 源码 | 第三方依赖，可重新安装 |
-| `~/.pi/agent/bin/{fd,rg}` | 预编译二进制，由系统包或 pi 自行获取 |
-| `pi-hermes-memory/`、`projects-memory/` | 个人记忆数据（约 6.5MB，含个人笔记），非配置；如需迁移请另行手动备份 |
-| `models-store.json`、`models.json` | 模型目录缓存，`pi update` 自动刷新 |
-| `extensions/pi-permission-system/` | 仅含日志，无代码 |
-| `skills/{codex-prove,rendercv,sol-control}/`、`~/.pi/agent/skills/{model-picker,...}` | 个人技能本机保留但不追踪；`sync.sh` 中 `SKIP_SKILLS` 显式跳过 |
+| `bootstrap.sh` | 新机器一键恢复：安装 pi → 重装 packages → 拷贝配置 → 恢复技能 |
+| `sync.sh` | 把本机配置反向同步回仓库：拷贝 → 密钥扫描 → commit（不 push） |
 
-## 日常同步
+`sync.sh` 会在 commit 前扫描 `sk-`、`ghp_`、`AKIA`、私钥头、`bearerToken`、`apiKey`、
+`password` 等常见密钥形态，命中疑似 secret 直接中止。
 
-```bash
-cd ~/pi-toolkit
-bash sync.sh     # 拉取本机配置 → 仓库 → 敏感扫描 → commit（不 push）
-git push         # 确认无误后手动推送
-```
+## 安全
 
-`sync.sh` 会在 commit 前用正则扫描常见密钥形态（`sk-`、`ghp_`、`AKIA`、私钥头、
-`bearerToken`、`apiKey`、`password` 等），发现疑似 secret 直接中止。
+- 仓库不包含任何真实凭据：`agent/mcp.example.json` 只引用环境变量 `SUPERMEMORY_API_KEY`，
+  恢复后需自行注入。
+- `.gitignore` 已覆盖凭据、缓存、日志与 `node_modules`；提交前仍建议检查一遍 `git status`。
 
-## 安全说明
+## 用作自己的配置模板
 
-- 仓库从未包含真实 token；`mcp.example.json` 使用 pi-mcp-adapter 支持的
-  `bearerTokenEnv`，从环境变量 `SUPERMEMORY_API_KEY` 读取密钥。
-- `.gitignore` 已覆盖凭据、缓存、日志、`node_modules`，但仍建议每次 push 前过一眼 `git status`。
+这是一个个人配置仓库，可以直接 fork 后改成自己的：
+
+1. 修改 `agent/settings.json` 中的 packages、主题与默认模型
+2. 按需增删 `agent/`、`skills/` 下的文件，调整 `agent/mcp.example.json`
+3. 在你的机器上运行 `bash sync.sh` 采集配置，确认后 `git push`
