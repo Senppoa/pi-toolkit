@@ -1,10 +1,10 @@
 {
-  "lastChangelogVersion": "0.85.1",
+  "lastChangelogVersion": "1.2.0",
   "theme": "my-light/my-dark",
   "defaultThinkingLevel": "max",
   "tuiMode": "regular",
-  "defaultProvider": "zai",
-  "defaultModel": "glm-5.3-flash",
+  "defaultProvider": "openrouter",
+  "defaultModel": "stealth/space-bunny-alpha",
   "hideThinkingBlock": true,
   "packages": [
     "npm:@smoose/pi-beautify",
@@ -15,12 +15,23 @@
     "npm:pi-background-tasks",
     "npm:pi-cache-optimizer",
     "npm:pi-markdown-preview",
-    "npm:pi-lens",
     "npm:@juicesharp/rpiv-todo",
     "npm:pi-hermes-memory",
     "npm:pi-loop",
     "npm:@narumitw/pi-goal",
-    "npm:pi-notify",
-    "git:github.com/DietrichGebert/ponytail"
+    {
+      "source": "npm:pi-notify",
+      "extensions": []
+    },
+    "git:github.com/DietrichGebert/ponytail",
+    "npm:@firstpick/pi-extension-safety-guard",
+    "npm:@firstpick/pi-extension-reverse-last",
+    "npm:@rahularya01/pi-lazy@0.3.1",
+    "npm:pi-tool-search",
+    "npm:@blueocean223/pi-provider",
+    "npm:pi-terminal-signals"
+  ],
+  "extensions": [
+    "-builtin:mcp"
   ]
 }

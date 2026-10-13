@@ -1,6 +1,7 @@
 # credentials & secrets — NEVER commit
 auth.json
 mcp.json
+mcp-adapter.json
 .env
 .env.*
 *.key

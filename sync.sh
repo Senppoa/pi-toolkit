@@ -23,6 +23,8 @@ cp "$PI_DIR/settings.json" "$REPO_DIR/agent/settings.json"
 cp "$PI_DIR/open-tui.json" "$REPO_DIR/agent/open-tui.json" 2>/dev/null || true
 cp "$PI_DIR/themes/"*.json "$REPO_DIR/agent/themes/" 2>/dev/null || true
 cp "$PI_DIR/extensions/effort.ts" "$REPO_DIR/agent/extensions/effort.ts" 2>/dev/null || true
+cp "$PI_DIR/lazy.json" "$REPO_DIR/agent/lazy.json" 2>/dev/null || true
+cp "$PI_DIR/hermes-memory-config.json" "$REPO_DIR/agent/hermes-memory-config.json" 2>/dev/null || true
 # snapshot of pi-managed dependency graph (record only — bootstrap re-installs)
 cp "$PI_DIR/npm/package.json" "$PI_DIR/npm/package-lock.json" "$REPO_DIR/agent/npm/" 2>/dev/null || true
 
@@ -36,9 +38,10 @@ for skill_dir in "$AGENTS_SKILLS"/*/; do
   cp -a "$skill_dir" "$REPO_DIR/skills/$name"
 done
 
-# mcp.json is NEVER copied — keep the sanitized example in sync by hand:
-if [[ -f "$PI_DIR/mcp.json" ]] && ! grep -q 'bearerTokenEnv\|\.env' "$PI_DIR/mcp.json" 2>/dev/null; then
-  log "NOTE: live mcp.json contains a literal token — update agent/mcp.example.json manually if servers changed."
+# MCP config is NEVER copied — pi-mcp-adapter keeps the live token in
+# mcp-adapter.json. Keep the sanitized example in sync by hand:
+if [[ -f "$PI_DIR/mcp-adapter.json" ]] && ! grep -q 'bearerTokenEnv' "$PI_DIR/mcp-adapter.json" 2>/dev/null; then
+  log "NOTE: live mcp-adapter.json contains a literal token — update agent/mcp.example.json manually if servers changed."
 fi
 
 # ---------------------------------------------------------------------------

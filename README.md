@@ -20,11 +20,11 @@ bash bootstrap.sh
 
 | 项目 | 值 |
 |---|---|
-| Pi 版本 | `0.85.1` |
-| 安装方式 | `npm install -g @earendil-works/pi-coding-agent`（Node v24.14.0，nvm 管理） |
+| Pi 版本 | `1.2.0`（pi 自管理安装：`~/.pi/agent/install/releases/1.2.0`，入口 `~/.local/bin/pi`） |
+| Node | v24.14.0（nvm 管理） |
 | 配置目录 | `~/.pi/agent` |
-| 技能目录 | `~/.agents/skills`（由 `~/.pi/agent/skills/*` 符号链接引用） |
-| 依赖快照日期 | 2026-09-16 |
+| 技能目录 | `~/.agents/skills`（slidev，软链进 `~/.pi/agent/skills/`）；`~/.pi/agent/skills/`（个人技能，如 model-picker） |
+| 依赖快照日期 | 2026-10-13 |
 
 ## 仓库内容 → 恢复位置
 
@@ -32,7 +32,9 @@ bash bootstrap.sh
 |---|---|---|
 | `agent/settings.json` | `~/.pi/agent/settings.json` | 主题、默认模型、packages 声明 |
 | `agent/open-tui.json` | `~/.pi/agent/open-tui.json` | pi-open-tui 配置 |
-| `agent/mcp.example.json` | `~/.pi/agent/mcp.json`（仅当不存在） | 已脱敏，token 走环境变量 |
+| `agent/mcp.example.json` | `~/.pi/agent/mcp-adapter.json`（仅当不存在） | 已脱敏，token 走环境变量 `SUPERMEMORY_API_KEY` |
+| `agent/lazy.json` | `~/.pi/agent/lazy.json` | pi-lazy 懒加载规格 |
+| `agent/hermes-memory-config.json` | `~/.pi/agent/hermes-memory-config.json` | pi-hermes-memory 模型覆盖 |
 | `agent/themes/*.json` | `~/.pi/agent/themes/` | 自定义主题 my-dark / my-light |
 | `agent/extensions/effort.ts` | `~/.pi/agent/extensions/` | 自定义 `/effort` 扩展 |
 | `agent/npm/package.json`、`package-lock.json` | 不直接复制 | 仅作版本记录，`pi install` 会重新生成 |
@@ -43,20 +45,28 @@ bash bootstrap.sh
 | 来源 | 版本 |
 |---|---|
 | `npm:@smoose/pi-beautify` | 0.1.9 |
-| `npm:pi-open-tui` | 0.3.5 |
-| `npm:pi-mcp-adapter` | 2.33.0 |
-| `npm:pi-web-access` | 0.29.0 |
-| `npm:pi-subagents` | 0.67.0 |
-| `npm:pi-background-tasks` | 2.5.0 |
-| `npm:pi-cache-optimizer` | 2.8.10 |
-| `npm:pi-markdown-preview` | 0.16.0 |
-| `npm:pi-lens` | 4.1.6 |
-| `npm:@juicesharp/rpiv-todo` | 2.10.1 |
-| `npm:pi-hermes-memory` | 0.9.9 |
+| `npm:pi-open-tui` | 0.3.11 |
+| `npm:pi-mcp-adapter` | 5.2.0 |
+| `npm:pi-web-access` | 0.39.0 |
+| `npm:pi-subagents` | 0.77.0 |
+| `npm:pi-background-tasks` | 2.6.9 |
+| `npm:pi-cache-optimizer` | 2.8.24 |
+| `npm:pi-markdown-preview` | 0.21.4 |
+| `npm:@juicesharp/rpiv-todo` | 2.13.8 |
+| `npm:pi-hermes-memory` | 0.9.10 |
 | `npm:pi-loop` | 0.1.5 |
-| `npm:@narumitw/pi-goal` | 0.54.4 |
-| `npm:pi-notify` | 1.4.0 |
-| `git:github.com/DietrichGebert/ponytail` | 356918e (2026-09-07) |
+| `npm:@narumitw/pi-goal` | 0.54.11 |
+| `npm:pi-notify` | 1.4.0（对象形式，`extensions: []`） |
+| `git:github.com/DietrichGebert/ponytail` | 70d0065 (2026-10-13) |
+| `npm:@firstpick/pi-extension-safety-guard` | 0.3.2 |
+| `npm:@firstpick/pi-extension-reverse-last` | 0.2.2 |
+| `npm:@rahularya01/pi-lazy` | 0.3.1 |
+| `npm:pi-tool-search` | 0.3.6 |
+| `npm:@blueocean223/pi-provider` | 0.2.1 |
+| `npm:pi-terminal-signals` | 0.1.0 |
+
+`settings.json` 同时声明 `"extensions": ["-builtin:mcp"]`：内置 MCP 由 `pi-mcp-adapter` 接管。
+`pi-lens` 已不再直接安装，改为 `agent/lazy.json` 中的懒加载规格（按需触发）。
 
 `bootstrap.sh` 按包名重新安装，会解析各包当前可用版本；如需严格锁定版本，可手动执行
 `cd ~/.pi/agent/npm && npm ci`（lock 文件已随仓库提供备份）。
@@ -66,7 +76,7 @@ bash bootstrap.sh
 | 内容 | 原因 |
 |---|---|
 | `auth.json` | OAuth / provider 凭据 |
-| `mcp.json`（真实 token） | 含 bearer token；仓库只提供 `mcp.example.json` |
+| `mcp.json` / `mcp-adapter.json`（真实 token） | 含 bearer token；仓库只提供 `mcp.example.json`（`bearerTokenEnv`） |
 | `.env`、`*.key`、`*.pem`、private key | 密钥类文件 |
 | `sessions/`、`tasks/`、`logs/`、`fff/`、`web-search-cache/`、`mcp-cache.json`、`trust.json` | 会话、运行日志与缓存，机器相关 |
 | `node_modules/`、`~/.pi/agent/npm/`（node_modules）、`~/.pi/agent/git/` 源码 | 第三方依赖，可重新安装 |
@@ -74,7 +84,7 @@ bash bootstrap.sh
 | `pi-hermes-memory/`、`projects-memory/` | 个人记忆数据（约 6.5MB，含个人笔记），非配置；如需迁移请另行手动备份 |
 | `models-store.json`、`models.json` | 模型目录缓存，`pi update` 自动刷新 |
 | `extensions/pi-permission-system/` | 仅含日志，无代码 |
-| `skills/{codex-prove,rendercv,sol-control}/` | 本机保留但不追踪；`sync.sh` 中 `SKIP_SKILLS` 显式跳过 |
+| `skills/{codex-prove,rendercv,sol-control}/`、`~/.pi/agent/skills/{model-picker,...}` | 个人技能本机保留但不追踪；`sync.sh` 中 `SKIP_SKILLS` 显式跳过 |
 
 ## 日常同步
 
@@ -91,6 +101,6 @@ git push         # 确认无误后手动推送
 
 - 仓库从未包含真实 token；`mcp.example.json` 使用 pi-mcp-adapter 支持的
   `bearerTokenEnv`，从环境变量 `SUPERMEMORY_API_KEY` 读取密钥。
-- 由于历史配置曾以明文形式存在于本机 `~/.pi/agent/mcp.json`，若该 token 曾外泄，
+- 由于历史配置曾以明文形式存在于本机 `~/.pi/agent/mcp-adapter.json`（旧版为 `mcp.json`），若该 token 曾外泄，
   建议到 supermemory 控制台轮换一次。
 - `.gitignore` 已覆盖凭据、缓存、日志、`node_modules`，但仍建议每次 push 前过一眼 `git status`。

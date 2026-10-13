@@ -2,22 +2,28 @@
   "name": "pi-extensions",
   "private": true,
   "dependencies": {
-    "@juicesharp/rpiv-todo": "^2.10.1",
-    "@narumitw/pi-goal": "^0.54.4",
+    "@blueocean223/pi-provider": "^0.2.1",
+    "@firstpick/pi-extension-reverse-last": "^0.2.2",
+    "@firstpick/pi-extension-safety-guard": "^0.3.2",
+    "@juicesharp/rpiv-todo": "^2.13.8",
+    "@narumitw/pi-goal": "^0.54.11",
+    "@rahularya01/pi-lazy": "^0.3.1",
     "@smoose/pi-beautify": "^0.1.9",
-    "pi-background-tasks": "^2.5.0",
-    "pi-cache-optimizer": "^2.8.10",
-    "pi-hermes-memory": "^0.9.9",
-    "pi-lens": "^4.1.6",
+    "pi-background-tasks": "^2.6.9",
+    "pi-cache-optimizer": "^2.8.24",
+    "pi-hermes-memory": "^0.9.10",
     "pi-loop": "^0.1.5",
-    "pi-markdown-preview": "^0.16.0",
-    "pi-mcp-adapter": "^2.33.0",
+    "pi-markdown-preview": "^0.21.4",
+    "pi-mcp-adapter": "^5.2.0",
     "pi-notify": "^1.4.0",
-    "pi-open-tui": "^0.3.5",
-    "pi-subagents": "^0.67.0",
-    "pi-web-access": "^0.29.0"
+    "pi-open-tui": "^0.3.11",
+    "pi-subagents": "^0.77.0",
+    "pi-terminal-signals": "^0.1.0",
+    "pi-tool-search": "^0.3.6",
+    "pi-web-access": "^0.39.0"
   },
   "overrides": {
+    "basic-ftp": "^6.2.2",
     "better-sqlite3": "^12.11.1"
   }
 }

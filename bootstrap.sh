@@ -27,15 +27,19 @@ backup_if_exists() {
 # 1. Node.js + pi itself
 # ---------------------------------------------------------------------------
 if ! command -v node >/dev/null 2>&1; then
-  log "Node.js not found — install Node.js >= 20 first (nvm recommended):"
+  log "Node.js not found — install Node.js >= 22.19 first (nvm recommended):"
   echo "  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash"
   echo "  nvm install --lts"
   exit 1
 fi
 
 if ! command -v pi >/dev/null 2>&1; then
-  log "Installing pi (@earendil-works/pi-coding-agent)…"
-  npm install -g @earendil-works/pi-coding-agent
+  log "Installing pi via official installer (https://pi.dev/install.sh)…"
+  if ! curl -fsSL https://pi.dev/install.sh | sh; then
+    warn "Installer failed — falling back to npm (does not pin transitive deps)"
+    npm install -g --ignore-scripts @earendil-works/pi-coding-agent
+  fi
+  export PATH="${HOME}/.local/bin:${PATH}"   # managed install entrypoint
 else
   log "pi already installed: $(pi --version 2>/dev/null || echo unknown)"
 fi
@@ -45,7 +49,7 @@ fi
 # ---------------------------------------------------------------------------
 log "Backing up existing config (if any) to $BACKUP_DIR"
 mkdir -p "$PI_DIR"
-for f in settings.json open-tui.json mcp.json; do
+for f in settings.json open-tui.json mcp.json mcp-adapter.json lazy.json hermes-memory-config.json; do
   backup_if_exists "$PI_DIR/$f"
 done
 for d in themes extensions skills; do
@@ -63,7 +67,8 @@ done
 # 3. Install all packages declared in settings.json (npm: and git:)
 # ---------------------------------------------------------------------------
 log "Installing declared packages via 'pi install'…"
-PACKAGES="$(node -e "JSON.parse(require('fs').readFileSync('$REPO_DIR/agent/settings.json','utf8')).packages.forEach(p=>console.log(p))")"
+# packages may be plain strings or objects with a "source" key (resource filters)
+PACKAGES="$(node -e "for (const p of JSON.parse(require('fs').readFileSync('$REPO_DIR/agent/settings.json','utf8')).packages) console.log(typeof p === 'string' ? p : p.source)")"
 while IFS= read -r pkg; do
   [[ -z "$pkg" ]] && continue
   log "  pi install $pkg"
@@ -82,13 +87,16 @@ mkdir -p "$PI_DIR/themes"
 cp "$REPO_DIR/agent/themes/"*.json "$PI_DIR/themes/"
 mkdir -p "$PI_DIR/extensions"
 cp "$REPO_DIR/agent/extensions/effort.ts" "$PI_DIR/extensions/"
+cp "$REPO_DIR/agent/lazy.json" "$PI_DIR/lazy.json"
+cp "$REPO_DIR/agent/hermes-memory-config.json" "$PI_DIR/hermes-memory-config.json"
 
-# MCP config: never overwrite an existing mcp.json
-if [[ -f "$PI_DIR/mcp.json" ]]; then
-  log "mcp.json already exists — left untouched"
+# MCP config: never overwrite an existing adapter config. pi-mcp-adapter 5.x reads
+# ~/.pi/agent/mcp-adapter.json (builtin MCP is disabled via "-builtin:mcp").
+if [[ -f "$PI_DIR/mcp-adapter.json" ]]; then
+  log "mcp-adapter.json already exists — left untouched"
 else
-  cp "$REPO_DIR/agent/mcp.example.json" "$PI_DIR/mcp.json"
-  warn "mcp.json created from example. Export the real token before use:"
+  cp "$REPO_DIR/agent/mcp.example.json" "$PI_DIR/mcp-adapter.json"
+  warn "mcp-adapter.json created from example. Export the real token before use:"
   warn "  export SUPERMEMORY_API_KEY=your-token   # add to ~/.bashrc / ~/.zshrc"
 fi
 
